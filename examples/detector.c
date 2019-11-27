@@ -933,8 +933,7 @@ float validate_detector_map(char *datacfg, char *cfgfile, char *weightfile, floa
 
     return mean_average_precision;
 }
-
-void validate_detector_recall(char *cfgfile, char *weightfile)
+void validate_detector_recall(char *datacfg, char *cfgfile, char *weightfile, float thresh_calc_avg_iou, const float iou_thresh, const int map_points, int letter_box, network *existing_net)
 {
     network *net = load_network(cfgfile, weightfile, 0);
     set_batch_network(net, 1);
@@ -1004,6 +1003,7 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
         free_image(orig);
         free_image(sized);
     }
+    validate_detector_recall(datacfg,cfg, weights, thresh, iou_thresh, map_points, letter_box, NULL);
 }
 
 
@@ -1288,8 +1288,7 @@ void run_detector(int argc, char **argv)
     else if(0==strcmp(argv[2], "train")) train_detector(datacfg, cfg, weights, gpus, ngpus, clear);
     else if(0==strcmp(argv[2], "valid")) validate_detector(datacfg, cfg, weights, outfile);
     else if(0==strcmp(argv[2], "valid2")) validate_detector_flip(datacfg, cfg, weights, outfile);
-    else if(0==strcmp(argv[2], "recall")) validate_detector_recall(cfg, weights);
-    else if (0 == strcmp(argv[2], "map")) validate_detector_map(datacfg, cfg, weights, thresh, iou_thresh, map_points, letter_box, NULL);
+    else if(0==strcmp(argv[2], "recall")) validate_detector_recall(datacfg,cfg, weights, thresh, iou_thresh, map_points, letter_box, NULL);
     else if(0==strcmp(argv[2], "demo")) {
         list *options = read_data_cfg(datacfg);
         int classes = option_find_int(options, "classes", 20);
