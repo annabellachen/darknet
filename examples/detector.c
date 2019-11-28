@@ -143,7 +143,7 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
             save_weights(net, buff);
         }
         free_data(train);
-        validate_detector_recall("//content/drive/My Drive/FYP_TEST/yolov2-tiny-voc-2.cfg","//content/drive/My Drive/FYP_TEST/yolov2-tiny-voc-2_"+i+".weights");
+        validate_detector_recall("//content/drive/My Drive/FYP_TEST/yolov2-tiny-voc-2.cfg","//content/drive/My Drive/FYP_TEST/yolov2-tiny-voc-2_"+to_string(i)+".weights");
     }
 #ifdef GPU
     if(ngpus != 1) sync_nets(nets, ngpus, 0);
