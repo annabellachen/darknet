@@ -4,6 +4,7 @@ static int coco_ids[] = {1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,20,21,22,2
 
 void validate_detector_recall_internal(network *network)
 {
+    network **nets = calloc(ngpus, sizeof(network));
     network *net = *network;
     set_batch_network(net, 1);
     fprintf(stderr, "Learning Rate: %g, Momentum: %g, Decay: %g\n", net->learning_rate, net->momentum, net->decay);
