@@ -2,78 +2,6 @@
 
 static int coco_ids[] = {1,2,3,4,5,6,7,8,9,10,11,13,14,15,16,17,18,19,20,21,22,23,24,25,27,28,31,32,33,34,35,36,37,38,39,40,41,42,43,44,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,67,70,72,73,74,75,76,77,78,79,80,81,82,84,85,86,87,88,89,90};
 
-void validate_detector_recall_internal(network *network)
-{
-    network **nets = calloc(ngpus, sizeof(network));
-    network *net = *network;
-    set_batch_network(net, 1);
-    fprintf(stderr, "Learning Rate: %g, Momentum: %g, Decay: %g\n", net->learning_rate, net->momentum, net->decay);
-    srand(time(0));
-
-    list *plist = get_paths("data/test.txt");
-    char **paths = (char **)list_to_array(plist);
-
-    layer l = net->layers[net->n-1];
-
-    int j, k;
-
-    int m = plist->size;
-    int i=0;
-
-    float thresh = .001;
-    float iou_thresh = .5;
-    float nms = .4;
-
-    int total = 0;
-    int correct = 0;
-    int proposals = 0;
-    float avg_iou = 0;
-
-    for(i = 0; i < m; ++i){
-        char *path = paths[i];
-        image orig = load_image_color(path, 0, 0);
-        image sized = resize_image(orig, net->w, net->h);
-        char *id = basecfg(path);
-        network_predict(net, sized.data);
-        int nboxes = 0;
-        detection *dets = get_network_boxes(net, sized.w, sized.h, thresh, .5, 0, 1, &nboxes);
-        if (nms) do_nms_obj(dets, nboxes, 1, nms);
-
-        char labelpath[4096];
-        find_replace(path, "images", "labels", labelpath);
-        find_replace(labelpath, "JPEGImages", "labels", labelpath);
-        find_replace(labelpath, ".jpg", ".txt", labelpath);
-        find_replace(labelpath, ".JPEG", ".txt", labelpath);
-
-        int num_labels = 0;
-        box_label *truth = read_boxes(labelpath, &num_labels);
-        for(k = 0; k < nboxes; ++k){
-            if(dets[k].objectness > thresh){
-                ++proposals;
-            }
-        }
-        for (j = 0; j < num_labels; ++j) {
-            ++total;
-            box t = {truth[j].x, truth[j].y, truth[j].w, truth[j].h};
-            float best_iou = 0;
-            for(k = 0; k < l.w*l.h*l.n; ++k){
-                float iou = box_iou(dets[k].bbox, t);
-                if(dets[k].objectness > thresh && iou > best_iou){
-                    best_iou = iou;
-                }
-            }
-            avg_iou += best_iou;
-            if(best_iou > iou_thresh){
-                ++correct;
-            }
-        }
-
-        fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
-        free(id);
-        free_image(orig);
-        free_image(sized);
-    }
-}
 void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear)
 {
     list *options = read_data_cfg(datacfg);
@@ -215,7 +143,7 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
             save_weights(net, buff);
         }
         free_data(train);
-        validate_detector_recall_internal(*net);
+        validate_detector_recall("//content/drive/My Drive/FYP_TEST/yolov2-tiny-voc-2.cfg","//content/drive/My Drive/FYP_TEST/yolov2-tiny-voc-2_"+i+".weights");
     }
 #ifdef GPU
     if(ngpus != 1) sync_nets(nets, ngpus, 0);
