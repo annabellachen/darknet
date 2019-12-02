@@ -232,7 +232,7 @@ void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, i
         //strcat( dest, result);
         //strcat( dest, ".weights");
         //validate_detector_recall(cfgfile,dest);
-        validate_detector_recall_internal(net,i);
+        //validate_detector_recall_internal(net,i);
     }
 #ifdef GPU
     if(ngpus != 1) sync_nets(nets, ngpus, 0);
