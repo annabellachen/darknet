@@ -67,6 +67,7 @@ void validate_detector_recall_internal(network *net,int iteration)
         }
         sum_iou+=avg_iou*100/total;
         sum_recall+=100.*correct/total;
+        FILE * fp;
         fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
         fp = fopen ("/backup/validationResult.txt","w");
         /* write 10 lines of text into the file stream*/
