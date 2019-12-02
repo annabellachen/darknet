@@ -76,7 +76,7 @@ void validate_detector_recall_internal(network *net,int iteration)
         free_image(sized);
     }
     FILE * fp;
-    fp = fopen ("/examples/validationResult.txt","ab+");
+    fp = fopen ("//content/darknet/examples/validationResult.txt","ab+");
     /* write 10 lines of text into the file stream*/
     fprintf (fp, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m); 
     /* close the file*/  
