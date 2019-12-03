@@ -75,13 +75,17 @@ void validate_detector_recall_internal(network *net,int iteration)
         free_image(orig);
         free_image(sized);
     }
-    //FILE * fp;
-    //fp = fopen ("//content/darknet/examples/validationResult.txt","ab+");
+    FILE * fp;
+    fp = fopen ("//content/darknet/examples/validationResult.txt","ab+");
     /* write 10 lines of text into the file stream*/
-    //fprintf (fp, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m); 
+    fprintf (fp, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m); 
     /* close the file*/  
-    //fclose (fp);
-    fprintf(stderr, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m);
+    fclose (fp);
+    //fprintf(stderr, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m);
+    free(fp);
+    free(sum_iou);
+    free(iteration);
+    free(sum_recall);
 }
 
 void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear)
