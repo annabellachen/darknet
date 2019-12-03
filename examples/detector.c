@@ -83,9 +83,6 @@ void validate_detector_recall_internal(network *net,int iteration)
     fclose (fp);
     //fprintf(stderr, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m);
     free(fp);
-    free(sum_iou);
-    free(iteration);
-    free(sum_recall);
 }
 
 void train_detector(char *datacfg, char *cfgfile, char *weightfile, int *gpus, int ngpus, int clear)
