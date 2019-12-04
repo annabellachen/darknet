@@ -518,7 +518,7 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
     int proposals = 0;
     float avg_iou = 0;
     int nthreads = 4;
-    int j, k;
+    int  k;
     image *val = calloc(nthreads, sizeof(image));
     image *val_resized = calloc(nthreads, sizeof(image));
     image *buf = calloc(nthreads, sizeof(image));
