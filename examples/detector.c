@@ -16,7 +16,8 @@ float validate_detector_recall_internal(network *net,int iteration)
 
     int m = plist->size;
     int i=0;
-
+    int nthreads = 4;
+    if (m < 4) nthreads = m;
     float thresh = .001;
     float iou_thresh = .5;
     float nms = .4;
@@ -458,7 +459,7 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
 {
     int j;
     list *options = read_data_cfg(datacfg);
-    char *valid_images = option_find_str(options, "valid", "data/train.list");
+    char *valid_images = option_find_str(options, "valid", "data/test.txt");
     char *name_list = option_find_str(options, "names", "data/names.list");
     char *prefix = option_find_str(options, "results", "results");
     char **names = get_labels(name_list);
