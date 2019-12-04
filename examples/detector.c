@@ -329,7 +329,7 @@ void validate_detector_flip(char *datacfg, char *cfgfile, char *weightfile, char
 {
     int j;
     list *options = read_data_cfg(datacfg);
-    char *valid_images = option_find_str(options, "valid", "data/train.list");
+    char *valid_images = option_find_str(options, "valid", "data/test.txt");
     char *name_list = option_find_str(options, "names", "data/names.list");
     char *prefix = option_find_str(options, "results", "results");
     char **names = get_labels(name_list);
@@ -510,15 +510,10 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
     int i=0;
     int t;
 
-    float thresh = .001;
-    float iou_thresh = .5;
+    float thresh = .005;
     float nms = .45;
-    int total = 0;
-    int correct = 0;
-    int proposals = 0;
-    float avg_iou = 0;
+
     int nthreads = 4;
-    int  k;
     image *val = calloc(nthreads, sizeof(image));
     image *val_resized = calloc(nthreads, sizeof(image));
     image *buf = calloc(nthreads, sizeof(image));
@@ -561,44 +556,13 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
             int nboxes = 0;
             detection *dets = get_network_boxes(net, w, h, thresh, .5, map, 0, &nboxes);
             if (nms) do_nms_sort(dets, nboxes, classes, nms);
-//             if (coco){
-//                 print_cocos(fp, path, dets, nboxes, classes, w, h);
-//             } else if (imagenet){
-//                 print_imagenet_detections(fp, i+t-nthreads+1, dets, nboxes, classes, w, h);
-//             } else {
-//                 print_detector_detections(fps, id, dets, nboxes, classes, w, h);
-//             }
-            char labelpath[4096];
-            find_replace(path, "images", "labels", labelpath);
-            find_replace(labelpath, "JPEGImages", "labels", labelpath);
-            find_replace(labelpath, ".jpg", ".txt", labelpath);
-            find_replace(labelpath, ".JPEG", ".txt", labelpath);
-
-            int num_labels = 0;
-            box_label *truth = read_boxes(labelpath, &num_labels);
-            for(k = 0; k < nboxes; ++k){
-                if(dets[k].objectness > thresh){
-                    ++proposals;
-                }
+            if (coco){
+                print_cocos(fp, path, dets, nboxes, classes, w, h);
+            } else if (imagenet){
+                print_imagenet_detections(fp, i+t-nthreads+1, dets, nboxes, classes, w, h);
+            } else {
+                print_detector_detections(fps, id, dets, nboxes, classes, w, h);
             }
-            for (j = 0; j < num_labels; ++j) {
-                ++total;
-                box t = {truth[j].x, truth[j].y, truth[j].w, truth[j].h};
-                float best_iou = 0;
-                for(k = 0; k < l.w*l.h*l.n; ++k){
-                    float iou = box_iou(dets[k].bbox, t);
-                    if(dets[k].objectness > thresh && iou > best_iou){
-                        best_iou = iou;
-                    }
-                }
-                avg_iou += best_iou;
-                if(best_iou > iou_thresh){
-                    ++correct;
-                }
-            }
-
-            fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
-
             free_detections(dets, nboxes);
             free(id);
             free_image(val[t]);
