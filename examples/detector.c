@@ -561,13 +561,13 @@ void validate_detector(char *datacfg, char *cfgfile, char *weightfile, char *out
             int nboxes = 0;
             detection *dets = get_network_boxes(net, w, h, thresh, .5, map, 0, &nboxes);
             if (nms) do_nms_sort(dets, nboxes, classes, nms);
-            if (coco){
-                print_cocos(fp, path, dets, nboxes, classes, w, h);
-            } else if (imagenet){
-                print_imagenet_detections(fp, i+t-nthreads+1, dets, nboxes, classes, w, h);
-            } else {
-                print_detector_detections(fps, id, dets, nboxes, classes, w, h);
-            }
+//             if (coco){
+//                 print_cocos(fp, path, dets, nboxes, classes, w, h);
+//             } else if (imagenet){
+//                 print_imagenet_detections(fp, i+t-nthreads+1, dets, nboxes, classes, w, h);
+//             } else {
+//                 print_detector_detections(fps, id, dets, nboxes, classes, w, h);
+//             }
             char labelpath[4096];
             find_replace(path, "images", "labels", labelpath);
             find_replace(labelpath, "JPEGImages", "labels", labelpath);
