@@ -596,7 +596,8 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
 
     int m = plist->size;
     int i=0;
-
+    int nthreads = 4;
+    if (m < 4) nthreads = m;
     float thresh = .001;
     float iou_thresh = .5;
     float nms = .4;
@@ -605,7 +606,8 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
     int correct = 0;
     int proposals = 0;
     float avg_iou = 0;
-
+    float sum_iou = 0;
+    float sum_recall = 0;      
     for(i = 0; i < m; ++i){
         char *path = paths[i];
         image orig = load_image_color(path, 0, 0);
@@ -644,12 +646,25 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
                 ++correct;
             }
         }
-
-        fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
+        sum_iou+=avg_iou*100/total;
+        sum_recall+=100.*correct/total;
+       
+        //fprintf(stderr, "%5d %5d %5d\tRPs/Img: %.2f\tIOU: %.2f%%\tRecall:%.2f%%\n", i, correct, total, (float)proposals/(i+1), avg_iou*100/total, 100.*correct/total);
+        
+        
         free(id);
         free_image(orig);
         free_image(sized);
     }
+    FILE * fp;
+    fp = fopen ("//content/validationResult.txt","ab+");
+    /* write 10 lines of text into the file stream*/
+    fprintf (fp, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m); 
+    /* close the file*/  
+    fclose (fp);
+    fprintf(stderr, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m);
+    free(fp);
+    //return sum_iou/m;
 }
 
 
