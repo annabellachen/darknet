@@ -659,10 +659,10 @@ void validate_detector_recall(char *cfgfile, char *weightfile)
     FILE * fp;
     fp = fopen ("//content/validationResult.txt","ab+");
     /* write 10 lines of text into the file stream*/
-    fprintf (fp, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m); 
+    fprintf (fp, "IOU: %.2f%%\tRecall:%.2f%%\n", sum_iou/m, sum_recall/m); 
     /* close the file*/  
     fclose (fp);
-    fprintf(stderr, "Epoch: %5d\tIOU: %.2f%%\tRecall:%.2f%%\n", iteration, sum_iou/m, sum_recall/m);
+    fprintf(stderr, "IOU: %.2f%%\tRecall:%.2f%%\n", sum_iou/m, sum_recall/m);
     free(fp);
     //return sum_iou/m;
 }
